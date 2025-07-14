@@ -1,0 +1,80 @@
+source - dbfs:/mnt/tokyoolympic/raw data/  -> raw data/
+target - dbfs:/mnt/tokyoolympic/transformed data/  -> transformed data/
+---------------------------------------------------------------------------------------------------------------
+athletes data is load to the transformed folder.
+athletes.write.mode("overwrite").option("header",'true').csv("dbfs:/mnt/tokyoolympic/transformed data/athletes")
+------------------------------------------------------------------------------------------------------------------
+athletes.write.mode("overwrite") \
+    .option("header", "true") \
+    .csv("dbfs:/mnt/tokyoolympic/transformed data/athletes")
+-------------------------------------------------------------------------------------------------------
+                                                  (LOAD THE DATA INTO TARGET)
+
+athletes.write.mode("overwrite").option("header",'true').csv("dbfs:/mnt/tokyoolympic/transformed data/athletes")
+Coaches.write.mode("overwrite").option("header", "true").csv("dbfs:/mnt/tokyoolympic/transformed data/Coaches")
+EntriesGender.write.mode("overwrite").option("header", "true").csv("dbfs:/mnt/tokyoolympic/transformed data/EntriesGender")
+Medals.write.mode("overwrite").option("header", "true").csv("dbfs:/mnt/tokyoolympic/transformed data/Medals")
+Teams.write.mode("overwrite").option("header", "true").csv("dbfs:/mnt/tokyoolympic/transformed data/Teams")
+================================================================================================
+		NOW WE LOAD THE DATA INTO AZURE SYNPSE 	
+Question->count no of athletes from each country.		
+
+SELECT country, COUNT(*) AS athlete_count
+FROM athletes
+GROUP BY country
+ORDER BY athlete_count DESC;
+
+Question-> count the total medal won by each country
+
+select Team_country, count(*) as medal_count
+FROM medals,
+group by Team_country
+order by medal_count DESC;
+
+Question-> calculate the average number of entries By number for each disciplines.
+
+SELECT discipline,
+    AVG(male) AS avg_male,
+    AVG(female) AS avg_female
+FROM EntriesGender
+GROUP BY discipline;
+
+note - if you want to know about one discipline 
+
+SELECT discipline,
+       AVG(male) AS AVG_Male,
+       AVG(female) AS AVG_Female
+FROM EntriesGender
+WHERE discipline = 'Basketball'
+GROUP BY discipline;
+---------------------------------------------------------------------------------------------------------
+SELECT Team_country, COUNT(*) AS total_medals
+FROM medals
+GROUP BY Team_country
+ORDER BY total_medals DESC;
+-------------------------------------------------------------------------
+SELECT team_country,
+       SUM(gold) AS Total_gold,
+       SUM(silver) AS Total_silver,
+       SUM(bronze) AS Total_bronze
+FROM medals
+GROUP BY team_country
+ORDER BY Total_gold DESC;
+------------------------------------------------------------------------------
+To read the file -> we have to load them .
+
+athletes = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/athletes.csv")
+Coaches = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/Coaches.csv")
+EntriesGender = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/EntriesGender.csv")
+Medals = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/Medals.csv")
+Teams = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/Teams.csv")
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+note -> you can visualized the data by chart , bar , pie etc
+
+
+
+
+
+
+
+

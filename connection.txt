@@ -1,0 +1,55 @@
+configs = {
+  "fs.azure.account.auth.type": "OAuth",
+  "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+  "fs.azure.account.oauth2.client.id": "9e916e80-f3cc-4a05-9e98-b966a1226a92",
+  "fs.azure.account.oauth2.client.secret": "rUL8Q~FggFW8JUFX0KB~gz13qpT70N_8S-w5obG.",
+  "fs.azure.account.oauth2.client.endpoint": "https://login.microsoftonline.com/2f637f16-90ec-4141-8d43-7fe50e9d8f03/oauth2/token"
+}
+
+dbutils.fs.mount(
+  source = "abfss://tokyo-olympic-data@tokyoolmpicdeepak1.dfs.core.windows.net/",
+  mount_point = "/mnt/tokyoolympic",
+  extra_configs = configs
+)
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+athletes = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/athletes.csv")
+athletes.show()
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+athletes = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/athletes.csv")
+Coaches = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/Coaches.csv")
+EntriesGender = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/EntriesGender.csv")
+Medals = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/Medals.csv")
+Teams = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/Teams.csv")
+======================================================================================================
+note - we ll see the print schema and do the transformation, But transformation only perform when you do some action.
+             pyspark is sensitive language , write as it is .
+---------------------------------------------------------------------------------------------------------------
+EntriesGender.printSchema() -> to see the datatype 
+Medals.printSchema() 
+Teams.printSchema() 
+
+note - is Column ka datatype change karenge .
+EntriesGender = EntriesGender.withColumn("Female", col("Female").cast("Integer"))
+---------------------------------------------------------------------------------------------------------------
+from pyspark.sql.functions import col
+from pyspark.sql.types import integerType, Doubletype , BooleanType , Datatype
+---------------------------------------------------------------------------------------------------------------------------------------
+EntriesGender = EntriesGender \
+    .withColumn("Female", col("Female").cast("Integer")) \
+    .withColumn("Male", col("Male").cast("Integer")) \
+    .withColumn("Total", col("Total").cast("Integer"))
+
+EntriesGender.show()
+-------------------------------------------------------------------------------------------------------
+Medals = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/Medals.csv")
+=================================================================================================
+note - > infer the schema means automatically figure out the correct data types
+Medals = spark.read.format("csv") \
+    .option("header", "true") \
+    .option("inferSchema", "true") \
+    .load("dbfs:/mnt/tokyoolympic/raw data/Medals.csv")
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+

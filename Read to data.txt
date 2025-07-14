@@ -1,0 +1,36 @@
+Teams = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/Teams.csv")
+Teams.printSchema() 
+Teams.show() 
+----------------------------------------------------------------------------------------------------------------------------------------------------
+athletes = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/athletes.csv")
+-----------------------------------------------------------------------------------------------------
+Teams= spark.read.format("csv") \
+    .option("header", "true") \
+    .option("inferSchema", "true") \
+    .load("dbfs:/mnt/tokyoolympic/raw data/Teams.csv")
+----------------------------------------------------------------------------------------------------
+Task - we can find top gold medals which countries has won .
+
+top_gold_medal = Medals.orderBy("gold", ascending=False)
+top_gold_medal.show()
+----------------------------------------------------------------------------------------------------
+top_gold_medal = Medals.orderBy("gold", ascending=False).select("Team/NOC","gold").show()
+===============================================================================
+top_gold_medal = Medals.orderBy("gold", ascending=False).select("Team/NOC", "gold")
+top_gold_medal.show()
+=======================================================================
+top_gold_medal = Medals.orderBy("gold", ascending=False).select("Team/NOC","gold").show()
+
+--------------------------------------------------------------------------------------------------------------------------
+Task - calculate the average no of entries by gender for each discipline.
+
+avg_entries_by_gender = EntriesGender.groupBy("Discipline") \
+    .agg(
+        avg("Female").alias("Avg_Female_Entries"),
+        avg("Male").alias("Avg_Male_Entries")
+    )
+
+avg_entries_by_gender.show()
+====================================================================================
+athletes = spark.read.format("csv").option("header", "true").load("dbfs:/mnt/tokyoolympic/raw data/athletes.csv")
+
